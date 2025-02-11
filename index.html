@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List Avanzata</title>
   <style>
-    /* Stile generale */
     body {
       font-family: Arial, sans-serif;
       background-color: #f9f9f9;
-      margin: 0; /* Aggiunto per rimuovere il margine predefinito del body */
-      display: flex; /* Aggiunto per abilitare Flexbox */
-      justify-content: center; /* Centra orizzontalmente */
-      align-items: center; /* Centra verticalmente */
-      min-height: 100vh; /* Assicura che il body occupi almeno l'intera altezza della viewport */
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .container {
@@ -21,22 +20,25 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      width: max-content; /* o una larghezza fissa se preferisci */
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-section, .events-section {
+      flex: 1;
     }
 
     #todo-form label {
-      margin-bottom: 5px;  
-      display: block;   
+      margin-bottom: 5px;
+      display: block;
     }
 
-    #todo-form input[type=text], textarea {
+    #todo-form input[type=text], textarea, input[type=datetime-local] {
       width: 100%;
-      padding-top: 10px;  
-      padding-bottom: 10px;  
-      margin-bottom: 15px;  
+      padding: 10px;
+      margin-bottom: 15px;
       border-radius: 5px;
-      border-style: solid;
-      border-width: thin;
+      border: 1px solid #ccc;
     }
 
     textarea {
@@ -46,42 +48,65 @@
     .delete-btn {
       background-color: red !important;
       color: white !important;
+      border: none;
+      padding: 5px 10px;
+      margin-left: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .delete-btn:hover {
+      background-color: darkred;
     }
 
     .todo-item {
       display: flex;
-      justify-content: start;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .todo-item span.title {
-      flex-grow: 1;
+      flex-direction: column;
+      background: #f1f1f1;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
     }
 
     .completed span.title {
       text-decoration: line-through;
     }
 
-    input[type='datetime-local'] {
-      width: max-content;
+    .todo-item span.title {
+      font-weight: bold;
     }
 
-    label[for='completed'] {
-      display: inline-block;
-      margin-left: -2em;
+    .todo-item div {
+      white-space: pre-line;
+      font-size: 0.9em;
+      margin-top: 5px;
     }
 
-    input[name='completed'] {
-      margin-right: 0.5em;
+    .event-item {
+      background: #e7f3ff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .event-item span {
+      font-weight: bold;
+      display: block;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     button[type='submit'] {
       background-color: #007bff;
       color: white;
       border: none;
-      padding: 0.7em;
-      border-radius: 0.3em;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
     button[type='submit']:hover {
@@ -92,38 +117,39 @@
 
 <body>
   <div class="container">
-    <h1>To-Do List Avanzata</h1>
-    <form id="todo-form">
-      <label for="title">Titolo:</label>
-      <input type="text" id="title" required placeholder="Inserisci il titolo dell'attività...">
-      <br>
-      <br>
+    <div class="form-section">
+      <h1>To-Do List Avanzata</h1>
+      <form id="todo-form">
+        <label for="title">Titolo:</label>
+        <input type="text" id="title" required placeholder="Inserisci il titolo dell'attività...">
+        
+        <label for="datetime">Data e Ora:</label>
+        <input type='datetime-local' id='datetime'>
 
-      <label for="datetime">Data e Ora:</label>
-      <input type='datetime-local' id='datetime' required>
-      <br>
-      <br>
+        <label for='description'>Descrizione:</label>
+        <textarea id='description' rows='4'></textarea>
 
-      <label for='description'>Descrizione:</label>
-      <textarea id='description' rows='4'></textarea>
-      <br>
-      <br>
+        <label>Completato:</label>
+        <input type='radio' name='completed' value="true" checked> Sì
+        <input type='radio' name='completed' value="false"> No 
 
-      Completato:
-      Sì<input type='radio' name='completed' value=true checked> 
-      No<input type='radio' name='completed' value=false> 
-      <br>
-      <br>
+        <button type="submit">Aggiungi Attività</button>
+      </form>
 
-      <button type="submit">Aggiungi Attività</button>
-    </form>
+      <h2>Le Tue Attività</h2>
+      <ul id="todo-list"></ul>
+    </div>
 
-    <ul id="todo-list"></ul>
+    <div class="events-section">
+      <h2>Eventi Programmati</h2>
+      <ul id="event-list"></ul>
+    </div>
   </div>
 
   <script>
     const todoForm = document.getElementById("todo-form");
     const todoList = document.getElementById("todo-list");
+    const eventList = document.getElementById("event-list");
 
     let todos = [];
 
@@ -133,31 +159,24 @@
 
       const titleSpan = document.createElement("span");
       titleSpan.textContent = `${new Date(todo.datetime).toLocaleString('it-IT', {dateStyle: 'short', timeStyle: 'short'})} - ${todo.title}`;
+      titleSpan.classList.add("title");
+
       titleSpan.addEventListener('click', () => {
         li.classList.toggle('completed');
         todo.completed = li.classList.contains('completed');
+        updateList();
       });
 
       const descDiv = document.createElement('div');
-      descDiv.style.marginLeft = '20px';
-
-      if (todo.description) {
-        descDiv.textContent = `Descrizione:\n${todo.description}`;
-      } else {
-        descDiv.textContent = "Nessuna descrizione fornita";
-      }
+      descDiv.textContent = todo.description ? `Descrizione: ${todo.description}` : "Nessuna descrizione fornita";
 
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'Elimina';
       deleteBtn.className = 'delete-btn';
 
       deleteBtn.addEventListener('click', () => {
-        const index = todos.findIndex((t) => t === todo);
-        if (index !== -1) {
-          todos.splice(index, 1);
-          updateList();
-          localStorage.setItem("todos", JSON.stringify(todos));
-        }
+        todos = todos.filter(t => t !== todo);
+        updateList();
       });
 
       li.appendChild(titleSpan);
@@ -167,14 +186,24 @@
       return li;
     }
 
+    function createEventItem(todo) {
+      const li = document.createElement("li");
+      li.classList.add("event-item");
+
+      const titleSpan = document.createElement("span");
+      titleSpan.textContent = `${new Date(todo.datetime).toLocaleString('it-IT', {dateStyle: 'short', timeStyle: 'short'})} - ${todo.title}`;
+
+      li.appendChild(titleSpan);
+      return li;
+    }
+
     function addTodo(event) {
       event.preventDefault();
 
-      const newDatetime = event.target.elements[2].valueAsDate?.toISOString().split('.')[0] || new Date().toISOString().split('.')[0];
-      const newDescription = event.target.elements[3].value.trim() || "";
-      const newCompleted = event.querySelector('[name=completed]:checked')?.value === 'true';
-
       const newTitle = event.target.elements["title"].value.trim();
+      const newDatetime = event.target.elements["datetime"].value || new Date().toISOString().slice(0, 16);
+      const newDescription = event.target.elements["description"].value.trim() || "";
+      const newCompleted = event.target.querySelector('[name=completed]:checked').value === 'true';
 
       if (!newTitle) {
         return alert("Inserisci un Titolo");
@@ -189,17 +218,24 @@
 
       todos.push(newTodo);
       updateList();
-      localStorage.setItem("todos", JSON.stringify(todos));
 
       event.target.reset();
     }
 
     function updateList() {
       todoList.innerHTML = '';
+      eventList.innerHTML = '';
+
+      todos.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 
       for (const todo of todos) {
         const item = createTodoItem(todo);
         todoList.appendChild(item);
+
+        if (!todo.completed) {
+          const eventItem = createEventItem(todo);
+          eventList.appendChild(eventItem);
+        }
       }
 
       localStorage.setItem("todos", JSON.stringify(todos));
@@ -207,22 +243,19 @@
 
     window.onload = function() {
       try {
-        const storedTodos = JSON.parse(localStorage.getItem("todos"));
-        if (storedTodos) {
-          todos = storedTodos.map(todo => ({
-            ...todo,
-            completed: todo.completed === true || todo.completed === 'true',
-            datetime: todo.datetime.includes('-') ? todo.datetime : new Date().toISOString().split('.')[0]
-          }));
-
-          updateList();
-        }
+        const storedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+        todos = storedTodos.map(todo => ({
+          ...todo,
+          datetime: todo.datetime || new Date().toISOString().slice(0, 16),
+          completed: todo.completed === true || todo.completed === 'true'
+        }));
+        updateList();
       } catch (e) {
         console.error(e);
       }
     };
 
-    todoForm.addEventListener('submit', addTodo, false);
+    todoForm.addEventListener('submit', addTodo);
   </script>
 </body>
 </html>
