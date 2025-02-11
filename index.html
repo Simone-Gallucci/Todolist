@@ -19,6 +19,7 @@
 
     .container {
       display: flex;
+      flex-direction: row;
       gap: 20px;
       background-color: #ffffff;
       padding: 20px;
@@ -26,7 +27,6 @@
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       width: 90%;
       max-width: 1000px;
-      flex-direction: row;
     }
 
     .form-section, .list-section {
@@ -42,16 +42,18 @@
 
     h2 {
       text-align: center;
+      font-size: 18px;
     }
 
     label {
       display: block;
       margin: 10px 0 5px;
+      font-size: 16px;
     }
 
     input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 5px;
       margin-bottom: 10px;
@@ -75,10 +77,11 @@
 
     .todo-item, .event-item {
       background: #f1f1f1;
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 10px;
       border-radius: 5px;
       position: relative;
+      font-size: 16px;
     }
 
     .todo-item span.title {
@@ -93,12 +96,13 @@
       background-color: red;
       color: white;
       border: none;
-      padding: 5px 10px;
+      padding: 8px;
       cursor: pointer;
       border-radius: 4px;
       position: absolute;
       right: 10px;
       top: 10px;
+      font-size: 14px;
     }
 
     .delete-btn:hover {
@@ -107,9 +111,10 @@
 
     .event-item {
       background: #e7f3ff;
-      padding: 10px;
+      padding: 12px;
       border-radius: 5px;
       margin-top: 10px;
+      font-size: 16px;
     }
 
     /* Layout responsive per dispositivi mobili */
@@ -117,6 +122,7 @@
       .container {
         flex-direction: column;
         width: 100%;
+        padding: 10px;
       }
 
       .form-section, .list-section {
@@ -128,6 +134,21 @@
         display: block;
         width: 100%;
         margin-top: 5px;
+      }
+
+      button {
+        font-size: 18px;
+        padding: 14px;
+      }
+
+      input, textarea {
+        font-size: 18px;
+        padding: 14px;
+      }
+
+      .todo-item, .event-item {
+        font-size: 18px;
+        padding: 14px;
       }
     }
   </style>
@@ -241,8 +262,6 @@
     function updateList() {
       todoList.innerHTML = '';
       eventList.innerHTML = '';
-
-      todos.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 
       todos.forEach(todo => {
         todoList.appendChild(createTodoItem(todo));
