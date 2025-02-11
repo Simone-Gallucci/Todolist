@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List Avanzata</title>
   <style>
+    /* Stile generale */
     body {
       font-family: Arial, sans-serif;
       background-color: #f9f9f9;
@@ -13,136 +14,161 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      padding: 10px;
     }
 
     .container {
+      display: flex;
+      gap: 20px;
       background-color: #ffffff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      flex-direction: row;
     }
 
-    .form-section, .events-section {
+    .form-section, .list-section {
       flex: 1;
     }
 
-    #todo-form label {
-      margin-bottom: 5px;
-      display: block;
+    .form-box, .list-box {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    #todo-form input[type=text], textarea, input[type=datetime-local] {
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, textarea {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
       border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-size: 16px;
     }
 
-    textarea {
-      height: auto !important;
-    }
-
-    .delete-btn {
-      background-color: red !important;
-      color: white !important;
+    button {
+      background-color: #007bff;
+      color: white;
       border: none;
-      padding: 5px 10px;
-      margin-left: 10px;
+      padding: 12px;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 4px;
+      width: 100%;
+      font-size: 16px;
     }
 
-    .delete-btn:hover {
-      background-color: darkred;
+    button:hover {
+      background-color: #0056b3;
     }
 
-    .todo-item {
-      display: flex;
-      flex-direction: column;
+    .todo-item, .event-item {
       background: #f1f1f1;
       padding: 10px;
       margin-bottom: 10px;
       border-radius: 5px;
-    }
-
-    .completed span.title {
-      text-decoration: line-through;
+      position: relative;
     }
 
     .todo-item span.title {
       font-weight: bold;
     }
 
-    .todo-item div {
-      white-space: pre-line;
-      font-size: 0.9em;
-      margin-top: 5px;
+    .completed span.title {
+      text-decoration: line-through;
+    }
+
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+
+    .delete-btn:hover {
+      background-color: darkred;
     }
 
     .event-item {
       background: #e7f3ff;
       padding: 10px;
-      margin-bottom: 10px;
       border-radius: 5px;
-    }
-
-    .event-item span {
-      font-weight: bold;
-      display: block;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 10px;
       margin-top: 10px;
     }
 
-    button[type='submit'] {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    /* Layout responsive per dispositivi mobili */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        width: 100%;
+      }
 
-    button[type='submit']:hover {
-      background-color: #0056b3;
+      .form-section, .list-section {
+        width: 100%;
+      }
+
+      .delete-btn {
+        position: static;
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
+    <!-- Form di inserimento -->
     <div class="form-section">
-      <h1>To-Do List Avanzata</h1>
-      <form id="todo-form">
-        <label for="title">Titolo:</label>
-        <input type="text" id="title" required placeholder="Inserisci il titolo dell'attività...">
-        
-        <label for="datetime">Data e Ora:</label>
-        <input type='datetime-local' id='datetime'>
+      <div class="form-box">
+        <h2>Nuova Attività</h2>
+        <form id="todo-form">
+          <label for="title">Titolo:</label>
+          <input type="text" id="title" required placeholder="Inserisci il titolo dell'attività...">
+          
+          <label for="datetime">Data e Ora:</label>
+          <input type='datetime-local' id='datetime'>
 
-        <label for='description'>Descrizione:</label>
-        <textarea id='description' rows='4'></textarea>
+          <label for='description'>Descrizione:</label>
+          <textarea id='description' rows='4'></textarea>
 
-        <label>Completato:</label>
-        <input type='radio' name='completed' value="true" checked> Sì
-        <input type='radio' name='completed' value="false"> No 
+          <label>Completato:</label>
+          <input type='radio' name='completed' value="true" checked> Sì
+          <input type='radio' name='completed' value="false"> No 
 
-        <button type="submit">Aggiungi Attività</button>
-      </form>
-
-      <h2>Le Tue Attività</h2>
-      <ul id="todo-list"></ul>
+          <button type="submit">Aggiungi Attività</button>
+        </form>
+      </div>
     </div>
 
-    <div class="events-section">
-      <h2>Eventi Programmati</h2>
-      <ul id="event-list"></ul>
+    <!-- Sezione visualizzazione -->
+    <div class="list-section">
+      <div class="list-box">
+        <h2>Le Tue Attività</h2>
+        <ul id="todo-list"></ul>
+      </div>
+
+      <div class="list-box">
+        <h2>Eventi Programmati</h2>
+        <ul id="event-list"></ul>
+      </div>
     </div>
   </div>
 
@@ -151,7 +177,7 @@
     const todoList = document.getElementById("todo-list");
     const eventList = document.getElementById("event-list");
 
-    let todos = [];
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
     function createTodoItem(todo) {
       const li = document.createElement("li");
@@ -167,9 +193,6 @@
         updateList();
       });
 
-      const descDiv = document.createElement('div');
-      descDiv.textContent = todo.description ? `Descrizione: ${todo.description}` : "Nessuna descrizione fornita";
-
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'Elimina';
       deleteBtn.className = 'delete-btn';
@@ -180,7 +203,6 @@
       });
 
       li.appendChild(titleSpan);
-      li.appendChild(descDiv);
       li.appendChild(deleteBtn);
 
       return li;
@@ -202,19 +224,13 @@
 
       const newTitle = event.target.elements["title"].value.trim();
       const newDatetime = event.target.elements["datetime"].value || new Date().toISOString().slice(0, 16);
-      const newDescription = event.target.elements["description"].value.trim() || "";
       const newCompleted = event.target.querySelector('[name=completed]:checked').value === 'true';
 
       if (!newTitle) {
         return alert("Inserisci un Titolo");
       }
 
-      const newTodo = {
-        title: newTitle,
-        datetime: newDatetime,
-        description: newDescription,
-        completed: newCompleted,
-      };
+      const newTodo = { title: newTitle, datetime: newDatetime, completed: newCompleted };
 
       todos.push(newTodo);
       updateList();
@@ -228,33 +244,15 @@
 
       todos.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 
-      for (const todo of todos) {
-        const item = createTodoItem(todo);
-        todoList.appendChild(item);
-
-        if (!todo.completed) {
-          const eventItem = createEventItem(todo);
-          eventList.appendChild(eventItem);
-        }
-      }
+      todos.forEach(todo => {
+        todoList.appendChild(createTodoItem(todo));
+        if (!todo.completed) eventList.appendChild(createEventItem(todo));
+      });
 
       localStorage.setItem("todos", JSON.stringify(todos));
     }
 
-    window.onload = function() {
-      try {
-        const storedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-        todos = storedTodos.map(todo => ({
-          ...todo,
-          datetime: todo.datetime || new Date().toISOString().slice(0, 16),
-          completed: todo.completed === true || todo.completed === 'true'
-        }));
-        updateList();
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
+    updateList();
     todoForm.addEventListener('submit', addTodo);
   </script>
 </body>
