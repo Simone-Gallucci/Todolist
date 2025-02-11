@@ -20,42 +20,50 @@
     .container {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 900px;
     }
 
-    .box {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    /* Form e lista affiancate su desktop */
+    .form-container, .list-container {
       flex: 1;
-      min-width: 300px;
+      padding: 10px;
     }
 
-    h2 {
+    .form-container {
+      border-right: 2px solid #ddd;
+    }
+
+    /* Titoli */
+    h1, h2 {
       text-align: center;
       margin-bottom: 15px;
     }
 
-    /* Stile input */
-    input, textarea, select {
+    /* Stili per input e textarea */
+    input, textarea {
       width: 100%;
       max-width: 100%;
       padding: 10px;
+      margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      margin-bottom: 10px;
-      font-size: 16px;
-      box-sizing: border-box;
     }
 
-    /* Allineamento radio button */
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    /* Stili per radio button */
     .radio-group {
       display: flex;
-      gap: 10px;
       align-items: center;
+      gap: 10px;
       margin-bottom: 10px;
     }
 
@@ -63,16 +71,32 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      font-size: 16px;
+      cursor: pointer;
     }
 
+    .radio-group input[type="radio"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #007bff;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+    }
+
+    .radio-group input[type="radio"]:checked {
+      background-color: #007bff;
+    }
+
+    /* Stile pulsante */
     button {
-      width: 100%;
       background-color: #007bff;
       color: white;
       border: none;
       padding: 10px;
       border-radius: 5px;
-      font-size: 16px;
+      width: 100%;
       cursor: pointer;
     }
 
@@ -80,65 +104,74 @@
       background-color: #0056b3;
     }
 
-    .delete-btn {
-      background-color: red;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-left: 10px;
+    /* Stili per la lista attività */
+    ul {
+      list-style: none;
+      padding: 0;
     }
 
     .todo-item {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f1f1f1;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
     }
 
-    .completed span {
+    .completed .title {
       text-decoration: line-through;
+      color: gray;
     }
 
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Responsività */
+    @media (max-width: 768px) {
       .container {
         flex-direction: column;
-        align-items: center;
+      }
+
+      .form-container {
+        border-right: none;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
 </head>
-<body>
 
+<body>
   <div class="container">
-    <!-- Form per l'inserimento -->
-    <div class="box">
+    <!-- Form per aggiungere nuove attività -->
+    <div class="form-container">
       <h2>Nuova Attività</h2>
       <form id="todo-form">
         <label for="title">Titolo:</label>
-        <input type="text" id="title" required placeholder="Inserisci il titolo dell'attività...">
-        
+        <input type="text" id="title" required placeholder="Inserisci il titolo...">
+
         <label for="datetime">Data e Ora:</label>
         <input type="datetime-local" id="datetime" required>
-        
+
         <label for="description">Descrizione:</label>
-        <textarea id="description" rows="3" placeholder="Aggiungi una descrizione..."></textarea>
-        
+        <textarea id="description"></textarea>
+
         <label>Completato:</label>
         <div class="radio-group">
-          <input type="radio" id="completed-yes" name="completed" value="true" checked>
-          <label for="completed-yes">Sì</label>
-
-          <input type="radio" id="completed-no" name="completed" value="false">
-          <label for="completed-no">No</label>
+          <label><input type="radio" name="completed" value="true"> Sì</label>
+          <label><input type="radio" name="completed" value="false" checked> No</label>
         </div>
 
         <button type="submit">Aggiungi Attività</button>
@@ -146,7 +179,7 @@
     </div>
 
     <!-- Lista attività -->
-    <div class="box">
+    <div class="list-container">
       <h2>Le Tue Attività</h2>
       <ul id="todo-list"></ul>
     </div>
@@ -164,8 +197,8 @@
       if (todo.completed) li.classList.add("completed");
 
       const titleSpan = document.createElement("span");
-      titleSpan.textContent = `${new Date(todo.datetime).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' })} - ${todo.title}`;
-
+      titleSpan.classList.add("title");
+      titleSpan.textContent = `${new Date(todo.datetime).toLocaleString('it-IT')} - ${todo.title}`;
       titleSpan.addEventListener('click', () => {
         li.classList.toggle('completed');
         todo.completed = li.classList.contains('completed');
@@ -175,7 +208,6 @@
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'Elimina';
       deleteBtn.className = 'delete-btn';
-
       deleteBtn.addEventListener('click', () => {
         todos = todos.filter(t => t !== todo);
         updateList();
@@ -189,47 +221,39 @@
     function addTodo(event) {
       event.preventDefault();
 
-      const newTodo = {
-        title: event.target.elements["title"].value.trim(),
-        datetime: event.target.elements["datetime"].value,
-        description: event.target.elements["description"].value.trim(),
-        completed: event.target.elements["completed-yes"].checked,
-      };
+      const title = event.target.elements["title"].value.trim();
+      const datetime = event.target.elements["datetime"].value;
+      const description = event.target.elements["description"].value.trim();
+      const completed = event.target.querySelector('[name=completed]:checked').value === 'true';
 
-      if (!newTodo.title) return alert("Inserisci un Titolo");
+      if (!title) return alert("Inserisci un titolo!");
 
+      const newTodo = { title, datetime, description, completed };
       todos.push(newTodo);
       updateList();
-      saveTodos();
       event.target.reset();
     }
 
     function updateList() {
-      todoList.innerHTML = '';
-      todos.forEach(todo => {
-        const item = createTodoItem(todo);
-        todoList.appendChild(item);
-      });
+      todoList.innerHTML = "";
+      todos.forEach(todo => todoList.appendChild(createTodoItem(todo)));
+      saveTodos();
     }
 
     function saveTodos() {
       localStorage.setItem("todos", JSON.stringify(todos));
     }
 
-    window.onload = function() {
-      try {
-        const storedTodos = JSON.parse(localStorage.getItem("todos"));
-        if (storedTodos) {
-          todos = storedTodos;
-          updateList();
-        }
-      } catch (e) {
-        console.error(e);
+    function loadTodos() {
+      const storedTodos = JSON.parse(localStorage.getItem("todos"));
+      if (storedTodos) {
+        todos = storedTodos;
+        updateList();
       }
-    };
+    }
 
-    todoForm.addEventListener('submit', addTodo, false);
+    todoForm.addEventListener('submit', addTodo);
+    window.onload = loadTodos;
   </script>
-
 </body>
 </html>
